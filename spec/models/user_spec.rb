@@ -1,8 +1,10 @@
 require 'spec_helper'
 
 describe User do
-
-  before { @user = User.new(name: "Example User", email: "user@example.com", password: "foobar", password_confirmation: "foobar") }
+  before do
+    @user = User.new(name: "Example User", email: "user@example.com",
+                 password: "foobar", password_confirmation: "foobar")
+  end
 
   subject { @user }
 
@@ -13,29 +15,36 @@ describe User do
   it { should respond_to(:password_confirmation) }
   it { should respond_to(:remember_token) }
   it { should respond_to(:authenticate) }
-  
-  it { should be_valid }
+  it { should respond_to(:admin) }
 
-  #nameの存在
+  it { should be_valid }
+  it { should_not be_admin }
+
+  describe "with admin attribute set to 'true'" do
+    before do
+      @user.save!
+      @user.toggle!(:admin)
+    end
+
+    it { should be_admin }
+  end
+
   describe "when name is not present" do
     before { @user.name = " " }
     it { should_not be_valid }
   end
 
-  #emailの存在
   describe "when email is not present" do
     before { @user.email = " " }
     it { should_not be_valid }
   end
-  
-  # 長さ検証用
+
   describe "when name is too long" do
     before { @user.name = "a" * 51 }
     it { should_not be_valid }
   end
-  
-  #emailのNGチェック
-    describe "when email format is invalid" do
+
+  describe "when email format is invalid" do
     it "should be invalid" do
       addresses = %w[user@foo,com user_at_foo.org example.user@foo.
                      foo@bar_baz.com foo@bar+baz.com]
@@ -46,7 +55,6 @@ describe User do
     end
   end
 
- #emailのOKチェック
   describe "when email format is valid" do
     it "should be valid" do
       addresses = %w[user@foo.COM A_US-ER@f.b.org frst.lst@foo.jp a+b@baz.cn]
@@ -56,35 +64,30 @@ describe User do
       end
     end
   end
-  
-  #emailの一意の確認
+
   describe "when email address is already taken" do
     before do
       user_with_same_email = @user.dup
-      # 大文字に変換する
       user_with_same_email.email = @user.email.upcase
       user_with_same_email.save
     end
 
     it { should_not be_valid }
   end
-  
-  # ﾊﾟｽﾜｰﾄﾞが空欄
-    describe "when password is not present" do
+
+  describe "when password is not present" do
     before do
       @user = User.new(name: "Example User", email: "user@example.com",
                        password: " ", password_confirmation: " ")
     end
     it { should_not be_valid }
   end
-  
-  # パスワードが一致
+
   describe "when password doesn't match confirmation" do
     before { @user.password_confirmation = "mismatch" }
     it { should_not be_valid }
   end
 
-  #パスワードが５ケタ
   describe "with a password that's too short" do
     before { @user.password = @user.password_confirmation = "a" * 5 }
     it { should be_invalid }
@@ -106,12 +109,8 @@ describe User do
     end
   end
 
-  #記憶トｰクンが有効である
   describe "remember token" do
     before { @user.save }
     its(:remember_token) { should_not be_blank }
   end
-
-
-
 end

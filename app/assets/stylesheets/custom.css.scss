@@ -117,7 +117,6 @@ footer {
   @include box_sizing;
 }
 
-/* 2015/11/18 追加 */
 /* sidebar */
 
 aside {
@@ -148,7 +147,9 @@ aside {
   margin-right: 10px;
 }
 
-/* サインアップ 認証画面 */
+
+/* forms */
+
 input, textarea, select, .uneditable-input {
   border: 1px solid #bbb;
   width: 100%;
@@ -172,4 +173,19 @@ input {
 .field_with_errors {
   @extend .control-group;
   @extend .error;
+}
+
+/* users index */
+
+.users {
+  list-style: none;
+  margin: 0;
+  li {
+    overflow: auto;
+    padding: 10px 0;
+    border-top: 1px solid $grayLighter;
+    &:last-child {
+      border-bottom: 1px solid $grayLighter;
+    }
+  }
 }
